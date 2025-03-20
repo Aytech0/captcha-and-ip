@@ -27,15 +27,22 @@
             let ipResponse = await fetch("https://api64.ipify.org?format=json");
             let ipData = await ipResponse.json();
             let userIP = ipData.ip;
-            
-            // Send IP to the bot via a webhook link
-            let botWebhookURL = "https://api.telegram.org/bot7794715173:AAG15t57fuBmddv_e0aJqAyfdIXaoXuk0lM/sendMessage";
-            let chatID = "6840613306"; // Replace with your bot's admin chat ID
 
-            let messageText = `User IP Verified: ${userIP}`;
+            // Retrieve the user's Telegram chat ID from the URL
+            let urlParams = new URLSearchParams(window.location.search);
+            let chatID = urlParams.get("chat_id");
+
+            if (!chatID) {
+                alert("Error: Unable to get chat ID. Please try again.");
+                return;
+            }
+
+            // Send verification message to the user
+            let botWebhookURL = "https://api.telegram.org/bot7794715173:AAG15t57fuBmddv_e0aJqAyfdIXaoXuk0lM/sendMessage";
+            let messageText = "✅ Verification successful! Please restart the bot to continue using it.";
             let finalURL = `${botWebhookURL}?chat_id=${chatID}&text=${encodeURIComponent(messageText)}`;
 
-            // Redirect user back to bot
+            // Redirect user back to the bot after verification
             window.location.href = finalURL;
         }
     </script>
