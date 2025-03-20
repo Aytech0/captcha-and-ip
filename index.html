@@ -45,12 +45,9 @@
             let successMessage = `✅ *Verification Successful!*\n\nYour IP: \`${userIP}\`\n\nPlease restart the bot to continue.`;
             await fetch(`${botWebhookURL}?chat_id=${chatID}&text=${encodeURIComponent(successMessage)}&parse_mode=Markdown`);
 
-            // Tell the bot to mark the user as verified
-            await fetch(`${botWebhookURL}?chat_id=${chatID}&text=/handleIP`);
-
             // Show confirmation and redirect
-            alert("✅ Verification successful! Return to Telegram.");
-            window.location.href = "https://t.me/Datapaying55bot"; // ✅ Redirects to Datapaying55bot
+            alert("✅ Verification successful! Redirecting to Telegram...");
+            window.location.href = `https://t.me/Datapaying55bot?start=handleIP`; // ✅ Redirects to /handleIP
         }
     </script>
 </body>
