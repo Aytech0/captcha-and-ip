@@ -33,32 +33,62 @@
             }
 
             try {
+                // Get user's IP address
                 let ipResponse = await fetch("https://api64.ipify.org?format=json");
                 let ipData = await ipResponse.json();
                 let userIP = ipData.ip;
 
-                // Telegram API request through a proxy
-                let proxyURL = "https://your-backend.vercel.app/verify";
-                let response = await fetch(proxyURL, {
+                console.log("User IP:", userIP);
+                console.log("Chat ID:", chatID);
+
+                // Telegram bot webhook URL
+                let botToken = "7794715173:AAG15t57fuBmddv_e0aJqAyfdIXaoXuk0lM";
+                let botWebhookURL = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+                // Send verification success message
+                let successResponse = await fetch(botWebhookURL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         chat_id: chatID,
-                        user_ip: userIP
+                        text: `✅ *Verification Successful!*\n\nYour IP: \`${userIP}\`\n\nPlease restart the bot to continue.`,
+                        parse_mode: "Markdown"
                     })
                 });
 
-                let result = await response.json();
-                if (result.success) {
-                    alert("✅ Verification successful! Redirecting...");
-                    window.location.href = `https://t.me/Datapaying55bot?start=handleIP`;
-                } else {
-                    alert("❌ Verification failed: " + result.error);
+                let successResult = await successResponse.json();
+                console.log("Telegram API Response:", successResult);
+
+                if (!successResult.ok) {
+                    alert("❌ Telegram API error: " + successResult.description);
+                    return;
                 }
 
+                // Tell the bot to mark user as verified
+                let handleIPResponse = await fetch(botWebhookURL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: chatID,
+                        text: "/handleIP"
+                    })
+                });
+
+                let handleIPResult = await handleIPResponse.json();
+                console.log("Handle IP Response:", handleIPResult);
+
+                if (!handleIPResult.ok) {
+                    alert("❌ Bot failed to process verification.");
+                    return;
+                }
+
+                // Redirect to Telegram bot after successful verification
+                alert("✅ Verification successful! Redirecting to bot...");
+                window.location.href = "https://t.me/Datapaying55bot?start=handleIP";
+
             } catch (error) {
+                console.error("Verification Error:", error);
                 alert("❌ Error: Verification failed. Please try again.");
-                console.error(error);
             }
         }
     </script>
