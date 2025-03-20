@@ -24,7 +24,6 @@
                 return;
             }
 
-            // Get chat_id from URL
             let urlParams = new URLSearchParams(window.location.search);
             let chatID = urlParams.get("chat_id");
 
@@ -33,21 +32,30 @@
                 return;
             }
 
-            // Get user's IP address
-            let ipResponse = await fetch("https://api64.ipify.org?format=json");
-            let ipData = await ipResponse.json();
-            let userIP = ipData.ip;
+            try {
+                let ipResponse = await fetch("https://api64.ipify.org?format=json");
+                let ipData = await ipResponse.json();
+                let userIP = ipData.ip;
 
-            // Telegram bot webhook URL
-            let botWebhookURL = "https://api.telegram.org/bot7794715173:AAG15t57fuBmddv_e0aJqAyfdIXaoXuk0lM/sendMessage";
+                // Send data to Telegram through webhook (replace with your webhook URL)
+                let webhookURL = "https://your-backend.vercel.app/verify";
+                await fetch(webhookURL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: chatID,
+                        user_ip: userIP
+                    })
+                });
 
-            // Notify user about successful verification
-            let successMessage = `✅ *Verification Successful!*\n\nYour IP: \`${userIP}\`\n\nPlease restart the bot to continue.`;
-            await fetch(`${botWebhookURL}?chat_id=${chatID}&text=${encodeURIComponent(successMessage)}&parse_mode=Markdown`);
+                // Redirect to Telegram bot
+                alert("✅ Verification successful! Redirecting...");
+                window.location.href = `https://t.me/Datapaying55bot?start=handleIP`;
 
-            // Show confirmation and redirect
-            alert("✅ Verification successful! Redirecting to Telegram...");
-            window.location.href = `https://t.me/Datapaying55bot?start=handleIP`; // ✅ Redirects to /handleIP
+            } catch (error) {
+                alert("❌ Error: Verification failed. Please try again.");
+                console.error(error);
+            }
         }
     </script>
 </body>
