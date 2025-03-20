@@ -20,34 +20,36 @@
         async function verifyIP() {
             let recaptchaResponse = grecaptcha.getResponse();
             if (!recaptchaResponse) {
-                alert("Please complete the CAPTCHA.");
+                alert("❌ Please complete the CAPTCHA.");
                 return;
             }
 
+            // Get chat_id from URL
             let urlParams = new URLSearchParams(window.location.search);
             let chatID = urlParams.get("chat_id");
 
             if (!chatID) {
-                alert("Error: Unable to get user chat ID. Please try again.");
+                alert("❌ Error: Unable to get user chat ID. Please try again.");
                 return;
             }
 
+            // Get user's IP address
             let ipResponse = await fetch("https://api64.ipify.org?format=json");
             let ipData = await ipResponse.json();
             let userIP = ipData.ip;
 
+            // Telegram bot webhook URL
             let botWebhookURL = "https://api.telegram.org/bot7794715173:AAG15t57fuBmddv_e0aJqAyfdIXaoXuk0lM/sendMessage";
 
-            let messageText = `✅ Verification successful!\n\nYour IP: ${userIP}\n\nPlease restart the bot to continue.`;
+            // Notify user about successful verification
+            let successMessage = `✅ *Verification Successful!*\n\nYour IP: \`${userIP}\`\n\nPlease restart the bot to continue.`;
+            await fetch(`${botWebhookURL}?chat_id=${chatID}&text=${encodeURIComponent(successMessage)}&parse_mode=Markdown`);
 
-            // Send verification to the user instead of admin
-            await fetch(`${botWebhookURL}?chat_id=${chatID}&text=${encodeURIComponent(messageText)}`);
-
-            // Mark user as verified
+            // Tell the bot to mark the user as verified
             await fetch(`${botWebhookURL}?chat_id=${chatID}&text=/handleIP`);
 
             // Show confirmation and redirect
-            alert("Verification successful! Return to Telegram.");
+            alert("✅ Verification successful! Return to Telegram.");
             window.location.href = "https://t.me/Luckypay01bot"; // Change to your bot username
         }
     </script>
